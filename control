@@ -1,0 +1,10 @@
+Package: com.rexq57.rechat
+Name: ReChat
+Depends: mobilesubstrate
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: 给微信添加指纹解锁功能的插件
+Maintainer: Rexq57
+Author: Rexq57
+Section: 系统工具
+Homepage: http://rexq.me
