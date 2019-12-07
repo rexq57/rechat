@@ -7,6 +7,8 @@
 		<key>Bundles</key>
 		<array>
 			<string>com.tencent.xin</string>
+			<string>com.wzbbj.resign</string>
+			<string>com.wzbbj.qingyan</string>
 		</array>
 	</dict>
 </dict>

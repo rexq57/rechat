@@ -1,12 +1,7 @@
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
-
-#import <Foundation/Foundation.h>
 #import <LocalAuthentication/LocalAuthentication.h>
 #define RELog(...)
-
-#import <objc/runtime.h>
-#include <chrono>
 
 // 指纹识别
 void EvaluatePolicy(void(^block)(BOOL success))
@@ -105,6 +100,7 @@ static UIView* _maskView = nil;
 
 + (void)load {
     
+    //exit(0);
     method_exchangeImplementations(class_getInstanceMethod(self, @selector(viewWillAppear:)),
                                    class_getInstanceMethod(self, @selector(swizzle_viewWillAppear:)));
 }
