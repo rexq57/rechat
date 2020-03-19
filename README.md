@@ -4,7 +4,7 @@
 
 APP支持列表里只支持了微信，你可以自行修改编译。
 
-或者从我的个人Cydia源下载此插件：http://rexq.me/cydia
+或者从我的个人Cydia源下载此插件：http://web.nas.rexq.me/cydia
 
 效果如下：
 
