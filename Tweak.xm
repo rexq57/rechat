@@ -63,27 +63,27 @@ void EvaluatePolicy(void(^block)(BOOL success))
 ////////////////////////////////////////////////////////
 
 static UIView* _maskView = nil;
-@interface UIViewController(Hook)
 
-@end
-@implementation UIViewController(Hook)
+void callPolicy() {
+    
+    UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
 
-- (void) callPolicy
-{
     // 添加一个白色全屏遮罩
     if (!_maskView)
     {
-        UIView* view = [[UIView alloc] initWithFrame:self.view.bounds];
+        UIView* view = [[UIView alloc] initWithFrame:rootViewController.view.bounds];
         view.backgroundColor = [UIColor whiteColor];
         _maskView = view;
     }
     
-    if (!_maskView.superview)
-        [self.view addSubview:_maskView];
+    if (!_maskView.superview) {
+        [rootViewController.view addSubview:_maskView];
+    }
+        
 }
 
-- (void) tryMovePolicy
-{
+void tryMovePolicy() {
+
     if (_maskView.superview)
     {
         // 指纹解锁
@@ -98,11 +98,34 @@ static UIView* _maskView = nil;
     }
 }
 
+
+@interface UIViewController(Hook)
+
+@end
+@implementation UIViewController(Hook)
+
 + (void)load {
     
     //exit(0);
     method_exchangeImplementations(class_getInstanceMethod(self, @selector(viewWillAppear:)),
                                    class_getInstanceMethod(self, @selector(swizzle_viewWillAppear:)));
+
+
+    // 注册app进入后台的通知
+    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationWillResignActiveNotification
+                                                        object:nil
+                                                        queue:nil
+                                                    usingBlock:^(NSNotification *note){
+                                                        callPolicy();
+                                                    }];
+    
+    // 注册app激活的通知
+    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidBecomeActiveNotification
+                                                        object:nil
+                                                        queue:nil
+                                                    usingBlock:^(NSNotification *note){
+                                                        tryMovePolicy();
+                                                    }];
 }
 
 - (void) swizzle_viewWillAppear:(BOOL)animated
@@ -116,24 +139,8 @@ static UIView* _maskView = nil;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
             
-            // 注册app进入后台的通知
-            [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationWillResignActiveNotification
-                                                              object:nil
-                                                               queue:nil
-                                                          usingBlock:^(NSNotification *note){
-                                                              [self callPolicy];
-                                                          }];
-            
-            // 注册app激活的通知
-            [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidBecomeActiveNotification
-                                                              object:nil
-                                                               queue:nil
-                                                          usingBlock:^(NSNotification *note){
-                                                              [self tryMovePolicy];
-                                                          }];
-            
             // rootViewController生效的时候，手动调用第一次添加遮罩，随后会触发UIApplicationDidBecomeActiveNotification通知
-            [self callPolicy];
+            callPolicy();
         });
     }
 }
