@@ -77,7 +77,7 @@ void callPolicy() {
     }
     
     if (!_maskView.superview) {
-        [rootViewController.view addSubview:_maskView];
+        [rootViewController.view.window addSubview:_maskView];
     }
         
 }
